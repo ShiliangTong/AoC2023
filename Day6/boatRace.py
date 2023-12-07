@@ -41,6 +41,5 @@ print(f"result: {result}")
 time = int(lines[0].replace(' ', '').replace('Time:', ''))
 dist = int(lines[1].replace(' ', '').replace('Distance:', ''))
 record_obj = record(time, dist)
-
 ways, maxDistance = getWaysToBeatRecord(record_obj)
-print(f"record: {time} {maxDistance} ways: {ways} maxDistance: {maxDistance}")
+print(f"record: {time} {dist} ways: {ways} maxDistance: {maxDistance}")
