@@ -6,33 +6,41 @@ def readInputFile(path: str):
 
 lines = readInputFile("c:/code/priv/python/AoC2023/Day11/input.txt")
 stars = []
-matrix = []
+colOrgLen = len(lines[0])
+extendedRowCounts = 0
 for i in range(len(lines)):
     r = list(lines[i].strip().replace('\n', ''))
-    matrix.append(r)
     if '#' in r:
-        indices = [(i, m.start()) for m in re.finditer('#', lines[i])]
-        print(indices)
+        indices = [[i+extendedRowCounts, m.start()] for m in re.finditer('#', lines[i])]
         stars.extend(indices)
-    else: # no star row, add empty row with '.'s
-        print(f'no star in row {i}, add empty row')
-        matrix.append(r)
+    else: # no star row, increase the row count by 1000000-1
+        print(f'no star in row {i}')
+        extendedRowCounts += 1000000-1
+allColsForStars = set([x[1] for x in stars])
+print(f'allColsForStars: len {len(allColsForStars)}')
+print(f'extendedRowCounts: {extendedRowCounts}')
 
-expandedMatrix_col = copy.deepcopy(matrix)
-star_cols = set()  # Set to store unique column numbers of stars
-cnt_expanded_col = 0
-for col in range(len(matrix[0])):
-    col_str = ''.join([row[col] for row in matrix])
-    print(f'col {col}: {col_str}')
-    if not '#' in col_str:
-        print(f'no star in col {col}, add empty col')
-        for row in range(len(matrix)):
-            expandedMatrix_col[row].insert(col+cnt_expanded_col, '.')
-        cnt_expanded_col += 1
-    else:
-        star_cols.add(col)  # Add the column number to the set
-        print(f'star in col {col}')
+noStarCols = [i for i in range(colOrgLen) if not i in allColsForStars]
+print(f'noStarCols: {noStarCols}')
+for star in stars:
+    originalStarCol = star[1]
+    for nsc in noStarCols:
+        if originalStarCol < nsc:
+            break
+        else:
+            #print(f'star {star[0]},{star[1]}, changed to {star[0]},{ star[1] + 1}')
+            star[1] += 1000000-1
 
-distinct_cols = len(star_cols)  # Get the count of unique column numbers
-print(f"Distinct column numbers of stars: {distinct_cols}")
+print(f'stars: {stars}')
+
+def getMinMoveFromAToB(a: list, b: list):
+    return abs(a[0]-b[0]) + abs(a[1]-b[1])
+
+total_distance = 0
+for i in range(len(stars)):
+    for j in range(i+1, len(stars)):
+        distance = getMinMoveFromAToB(stars[i], stars[j])
+        total_distance += distance
+
+print(f"Total distance between all stars: {total_distance}")
 
